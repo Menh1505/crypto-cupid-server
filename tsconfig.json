@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "CommonJS",
+        "outDir": "dist",
+        "rootDir": "src",
+        "strict": true,
+        "esModuleInterop": true, // Enables default imports for CommonJS modules
+        "allowSyntheticDefaultImports": true, // Allows default imports even if the module doesn't have a default export
+        // other options...
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
