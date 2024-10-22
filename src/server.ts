@@ -29,12 +29,18 @@ const connectDB = async () => {
 connectDB();
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:3000', // Replace with your client URL
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
 
-handleSocketConnection(io);
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
     credentials: true,
 }));
 // Session management
@@ -43,6 +49,8 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
 }));
+
+handleSocketConnection(io);
 
 // Initialize passport
 app.use(passport.initialize());
@@ -56,7 +64,7 @@ app.use('/blocks', blockRoutes);
 app.use('/reports', reportRoutes);
 app.use('/auth', authRoutes); // Use the auth routes
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
