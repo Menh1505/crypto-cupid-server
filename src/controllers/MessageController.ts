@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Message from '../models/Message';
+import { Server, Socket } from 'socket.io';
 
 // Create a new message
 export const createMessage = async (req: Request, res: Response) => {
@@ -46,4 +47,29 @@ export const deleteMessageById = async (req: Request, res: Response) => {
             res.status(500).json({ error: 'An unknown error occurred' });
         }
     }
+};
+
+// Function to handle socket events
+export const handleSocketConnection = (io: Server) => {
+    io.on('connection', (socket: Socket) => {
+        console.log('a user connected');
+
+        socket.on('joinRoom', (matchId) => {
+            socket.join(matchId);
+        });
+
+        socket.on('sendMessage', async (messageData) => {
+            try {
+                const message = new Message(messageData);
+                await message.save();
+                io.to(messageData.match_id).emit('receiveMessage', message);
+            } catch (error) {
+                console.error('Error saving message:', error);
+            }
+        });
+
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+        });
+    });
 };
