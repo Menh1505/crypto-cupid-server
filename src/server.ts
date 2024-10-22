@@ -11,6 +11,9 @@ import blockRoutes from './routes/BlockRoutes';
 import reportRoutes from './routes/ReportRoutes';
 import authRoutes from './routes/AuthRoutes'; // Import the auth routes
 import mongoose from 'mongoose';
+import http from 'http';
+import { Server } from 'socket.io';
+import { handleSocketConnection } from './controllers/MessageController';
 
 require('dotenv').config();
 
@@ -25,7 +28,10 @@ const connectDB = async () => {
 };
 connectDB();
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
+handleSocketConnection(io);
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:3000',
